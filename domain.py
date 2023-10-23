@@ -3,24 +3,23 @@ import numpy as np
 
 def initialize_domain(board):  # initialize domain
     domain = np.full((9, 9, 9), np.array(range(1, 10)), dtype=object)  # 9x9x9 array of 1-9
-    for i in range(9):  # iterate through board
-        for j in range(9):  # iterate through board
-            if board[i][j] == 0:  # if empty space
-                remove_dim_domain(board, domain, i, j)  # remove from domain
-                remove_box_domain(board, i, j)  # remove from domain
-            else:  # if not empty space
-                domain[i][j] = [board[i][j]]  # assign value
+    for i, j in np.ndindex(board.shape):  # iterate through board
+        if board[i][j] == 0:  # if empty space
+            remove_dim_domain(board, domain, i, j)  # remove from domain
+            remove_box_domain(board, i, j)  # remove from domain
+        else:  # if not empty space
+            domain[i][j] = [board[i][j]]  # assign value
     return domain  # return domain
 
 
 def remove_dim_domain(board, domain, row, col):  # remove from domain
     for i in range(9):  # iterate through board
         if board[row][i] != 0:  # if not empty space
-            domain[row][col] = np.delete(domain[row][col],
-                                         np.where(domain[row][col] == board[row][i]))  # remove from domain
+            # remove from domain
+            domain[row][col] = np.delete(domain[row][col], np.where(domain[row][col] == board[row][i]))
         if board[i][col] != 0:  # if not empty space
-            domain[row][col] = np.delete(domain[row][col],
-                                         np.where(domain[row][col] == board[i][col]))  # remove from domain
+            # remove from domain
+            domain[row][col] = np.delete(domain[row][col], np.where(domain[row][col] == board[i][col]))
     return domain  # return domain
 
 
@@ -35,7 +34,8 @@ def remove_box_domain(board, domain, row, col):  # remove from domain
     return domain  # return domain
 
 
-def update_domain(board, domain, row, col, num, backtrack):  # update domain with constraint propagation
+# TODO: sistemare funzione, non funziona correttamente
+def prune_domain(board, domain, row, col, num, backtrack):  # update domain with constraint propagation
     if backtrack:  # if backtracking
         domain[row][col] = np.append(domain[row][col], num)  # add to domain
         domain[row][col] = np.sort(domain[row][col])  # sort domain
@@ -44,4 +44,3 @@ def update_domain(board, domain, row, col, num, backtrack):  # update domain wit
     domain = remove_dim_domain(board, domain, row, col)  # remove from domain
     domain = remove_box_domain(board, domain, row, col)  # remove from domain
     return domain  # return domain
-
