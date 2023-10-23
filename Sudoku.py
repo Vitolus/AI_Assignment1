@@ -18,6 +18,10 @@ class Sudoku:
             return True  # solved
 
         value = self.__least_constraining_value(row, col)  # find least constraining value
+        if value is None:  # if no valid value can be assigned
+            self.exec_time.append(time.time() - start_time)  # add execution time
+            return False  # not solvable
+
         self.board[row][col] = value  # assign value
         self.domain = dom.propagate_domain(self.board, self.domain, row, col, value, False)  # update domain
         if self.solve():  # if solved
@@ -47,6 +51,8 @@ class Sudoku:
 
             self.board[row][col] = 0  # backtrack temporary value
 
+        if sum(counts) == 0:
+            return None
         min_count = min(count for count in counts if count > 0)  # find min count
         return counts.index(min_count) + 1  # return value of min count
 
@@ -56,9 +62,3 @@ class Sudoku:
                 return row, col  # return row and col
 
         return None  # no empty spaces
-
-    def __is_valid(self, num, row, col):  # check if valid
-        if num not in self.domain[row][col]:  # check if in domain
-            return False  # not valid
-
-        return True  # valid

@@ -10,7 +10,7 @@ def initialize_domain(board):
                             set(board[i // 3 * 3:i // 3 * 3 + 3, j // 3 * 3:j // 3 * 3 + 3].ravel()))  # assign domain
 
         else:  # if not empty space
-            domain[i][j] = {board[i][j]} # assign value
+            domain[i][j] = {board[i][j]}  # assign value
 
     return domain
 
