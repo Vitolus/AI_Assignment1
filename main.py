@@ -1,20 +1,21 @@
-import numpy as np
-from Sudoku import Sudoku
+import helper as h
+import sudoku as s
 
-BOARD = np.array([[5, 3, 0, 0, 7, 0, 0, 0, 0],
-                  [6, 0, 0, 1, 9, 5, 0, 0, 0],
-                  [0, 9, 8, 0, 0, 0, 0, 6, 0],
-                  [8, 0, 0, 0, 6, 0, 0, 0, 3],
-                  [4, 0, 0, 8, 0, 3, 0, 0, 1],
-                  [7, 0, 0, 0, 2, 0, 0, 0, 6],
-                  [0, 6, 0, 0, 0, 0, 2, 8, 0],
-                  [0, 0, 0, 4, 1, 9, 0, 0, 5],
-                  [0, 0, 0, 0, 8, 0, 0, 7, 9]])
+START_BOARD = '53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79'
 
 if __name__ == '__main__':
-    t = np.empty([100])
-    sudoku = Sudoku(BOARD)
-    print("initial board: {}".format(sudoku.board))
-    sudoku.solve()
-    print("solved board: {}".format(sudoku.board))
-    print("execution time: {}".format(sudoku.exec_time))
+    board = dict(zip(h.BOXES, START_BOARD))  # create a dictionary of boxes and their values
+    h.display(board)  # display the board
+    print('\n' * 2)  # add some space
+    for k, v in board.items():  # replace all the '.' with all possible values
+        if v == '.':  # if the cell is empty
+            board[k] = '123456789'  # replace it with all possible values
+
+    # =======================================================================
+    # Do all the testing and solving below this line
+    # =======================================================================
+
+    solved_board = s.search(board)
+    # solved_grid = s.eliminate(board)
+
+    h.display(solved_board)

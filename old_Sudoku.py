@@ -1,4 +1,4 @@
-import domain as dom
+import old_domain as dom
 from itertools import product
 import numpy as np
 import time
@@ -18,10 +18,6 @@ class Sudoku:
             return True  # solved
 
         value = self.__least_constraining_value(row, col)  # find least constraining value
-        if value is None:  # if no valid value can be assigned
-            self.exec_time.append(time.time() - start_time)  # add execution time
-            return False  # not solvable
-
         self.board[row][col] = value  # assign value
         self.domain = dom.propagate_domain(self.board, self.domain, row, col, value, False)  # update domain
         if self.solve():  # if solved
@@ -53,6 +49,7 @@ class Sudoku:
 
         if sum(counts) == 0:
             return None
+
         min_count = min(count for count in counts if count > 0)  # find min count
         return counts.index(min_count) + 1  # return value of min count
 
