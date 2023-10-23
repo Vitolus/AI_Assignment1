@@ -4,7 +4,7 @@ import sudoku as s
 START_BOARD = '53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79'
 
 if __name__ == '__main__':
-    board = dict(zip(h.BOXES, START_BOARD))  # create a dictionary of boxes and their values
+    board = dict(zip(h.CELLS, START_BOARD))  # create a dictionary of boxes and their values
     h.display(board)  # display the board
     print('\n' * 2)  # add some space
     for k, v in board.items():  # replace all the '.' with all possible values
@@ -14,8 +14,8 @@ if __name__ == '__main__':
     # =======================================================================
     # Do all the testing and solving below this line
     # =======================================================================
+    sudoku = s.Sudoku(board)
+    sudoku.solve()
+    # solved_grid = sudoku.eliminate()
 
-    solved_board = s.search(board)
-    # solved_grid = s.eliminate(board)
-
-    h.display(solved_board)
+    h.display(sudoku.board)
