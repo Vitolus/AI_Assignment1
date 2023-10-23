@@ -1,4 +1,3 @@
-import helper as h
 import sudoku as s
 from itertools import product
 

@@ -1,4 +1,3 @@
-import helper as h
 from itertools import product
 
 
