@@ -11,11 +11,6 @@ if __name__ == '__main__':
         if v == '.':  # if the cell is empty
             board[k] = '123456789'  # replace it with all possible values
 
-    # =======================================================================
-    # Do all the testing and solving below this line
-    # =======================================================================
-    sudoku = s.Sudoku(board)
-    sudoku.solve()
-    # solved_grid = sudoku.eliminate()
-
-    h.display(sudoku.board)
+    sudoku = s.Sudoku(board)  # create a Sudoku object
+    sudoku.solve()  # solve the board
+    h.display(sudoku.board)  # display the board
