@@ -3,11 +3,10 @@ from itertools import product
 
 
 class Sudoku:
-    _ROWS = 'ABCDEFGHI'  # rows of the board
-    _COLS = '123456789'  # columns of the board
-    _CELLS = [''.join(cell) for cell in product(_ROWS, _COLS)]  # all the cells of the board
-
     def __init__(self, board):
+        self._ROWS = 'ABCDEFGHI'  # all the rows
+        self._COLS = '123456789'  # all the columns
+        self._CELLS = [''.join(cell) for cell in product(self._ROWS, self._COLS)]  # all the cells
         self.board = board
         self.units = ([[''.join(p) for p in product(i, self._COLS)] for i in self._ROWS] +  # row units
                       [[''.join(p) for p in product(self._ROWS, j)] for j in self._COLS] +  # column units
@@ -19,18 +18,6 @@ class Sudoku:
             (cell, set(sum(dict(
                 (cell, [unit for unit in self.units if cell in unit]) for cell in self._CELLS)[cell], []))
              - {cell}) for cell in self._CELLS)
-
-    @property
-    def ROWS(self):
-        return self._ROWS
-
-    @property
-    def COLS(self):
-        return self._COLS
-
-    @property
-    def CELLS(self):
-        return self._CELLS
 
     def solve(self):  # solve the board
         self.__run_episode()  # run the elimination and only choice strategy
