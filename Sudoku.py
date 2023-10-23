@@ -15,12 +15,12 @@ class Sudoku:
 
         value = self.__least_constraining_value(row, col)  # find least constraining value
         self.board[row][col] = value  # assign value
-        self.domain = dom.prune_domain(self.board, self.domain, row, col, value, False)  # update domain
+        self.domain = dom.propagate_domain(self.board, self.domain, row, col, value, False)  # update domain
         if self.solve():  # if solved
             return True  # solved
 
         self.board[row][col] = 0  # backtrack value
-        self.domain = dom.prune_domain(self.board, self.domain, row, col, value, True)  # update domain
+        self.domain = dom.propagate_domain(self.board, self.domain, row, col, value, True)  # update domain
         return False
 
     def __least_constraining_value(self, row, col):  # least constraining value heuristic
