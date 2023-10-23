@@ -1,5 +1,4 @@
 import numpy as np
-import time
 from Sudoku import Sudoku
 
 BOARD = np.array([[5, 3, 0, 0, 7, 0, 0, 0, 0],
@@ -12,11 +11,10 @@ BOARD = np.array([[5, 3, 0, 0, 7, 0, 0, 0, 0],
                   [0, 0, 0, 4, 1, 9, 0, 0, 5],
                   [0, 0, 0, 0, 8, 0, 0, 7, 9]])
 
-
 if __name__ == '__main__':
     t = np.empty([100])
-
-    for j in range(100):
-        start = time.time()
-        t[j] = time.time() - start
-    print("execution time: {}".format(t.mean()))
+    sudoku = Sudoku(BOARD)
+    print("initial board: {}".format(sudoku.board))
+    sudoku.solve()
+    print("solved board: {}".format(sudoku.board))
+    print("execution time: {}".format(sudoku.exec_time))

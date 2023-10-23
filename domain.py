@@ -6,12 +6,11 @@ def initialize_domain(board):
     domain = np.empty((9, 9), dtype=object)
     for i, j in np.ndindex(domain.shape):
         if board[i][j] == 0:  # if empty space
-            values = (set(range(9)) - set(board[i, :]) - set(board[:, j]) -
-                      set(board[i // 3 * 3:i // 3 * 3 + 3, j // 3 * 3:j // 3 * 3 + 3].ravel()))  # find possible values
-            domain[i][j] = np.array(list(values))  # assign values
+            domain[i][j] = (set(range(9)) - set(board[i, :]) - set(board[:, j]) -
+                            set(board[i // 3 * 3:i // 3 * 3 + 3, j // 3 * 3:j // 3 * 3 + 3].ravel()))  # assign domain
 
         else:  # if not empty space
-            domain[i][j] = np.array([board[i][j]])  # assign value
+            domain[i][j] = {board[i][j]} # assign value
 
     return domain
 
