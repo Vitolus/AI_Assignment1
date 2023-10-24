@@ -1,70 +1,78 @@
-from itertools import product
 import time
 
 
+def cartesian_product(a, b):  # get the cartesian product of two strings
+    return [i + j for i in a for j in b]
+
+
 class Sudoku:
-    def __init__(self, board):
+    def __init__(self):
         self._ROWS = 'ABCDEFGHI'  # all the rows
         self._COLS = '123456789'  # all the columns
-        self._CELLS = [''.join(cell) for cell in product(self._ROWS, self._COLS)]  # all the cells
-        self.board = board
-        self.exec_time = [] # list to store the time taken to solve the board
-        self.units = ([[''.join(p) for p in product(i, self._COLS)] for i in self._ROWS] +  # row units
-                      [[''.join(p) for p in product(self._ROWS, j)] for j in self._COLS] +  # column units
-                      # cell units
-                      [[''.join(p) for p in product(i, j)] for i in ['ABC', 'DEF', 'GHI']
-                       for j in ['123', '456', '789']])
+        self._CELLS = cartesian_product(self._ROWS, self._COLS)  # all the cells
+        self.exec_time = []  # list to store the time taken to solve the board
+        row_u = [cartesian_product(row, self._COLS) for row in self._ROWS]  # row units
+        col_u = [cartesian_product(self._ROWS, col) for col in self._COLS]  # column units
+        # cell units
+        cell_u = [cartesian_product(row, col) for row in ('ABC', 'DEF', 'GHI') for col in ('123', '456', '789')]
+        self._units = row_u + col_u + cell_u  # all the units
+        # map each cell to its units
+        units = dict((cell, [unit for unit in self._units if cell in unit]) for cell in self._CELLS)
         # map each cell to its peers
-        self.peer_dict = dict(
-            (cell, set(sum(dict(
-                (cell, [unit for unit in self.units if cell in unit]) for cell in self._CELLS)[cell], []))
-             - {cell}) for cell in self._CELLS)
+        self._peers = dict((cell, set(sum(units[cell], [])) - {cell}) for cell in self._CELLS)
 
-    def solve(self):  # solve the board
-        self.__run_episode()  # run the elimination and only choice strategy
-        if all(len(v) == 1 for v in self.board.values()):  # if all the cells have only one value
-            return True  # board is solved
+    def solve(self, board):  # solve the board
+        board = self.__run_episode(board)  # run the elimination and only choice strategy
+        if board is False:  # if the board is unsolvable
+            return False  # return False
 
-        k, values = min((k, v) for k, v in self.board.items() if len(v) > 1)  # get the cell with the least values
-        for num in values:  # iterate over all the values
-            new_board = self.board.copy()  # create a copy of the board
+        if all(len(v) == 1 for v in board.values()):  # if all the cells have only one value
+            return board  # board is solved
+
+        length, k = min((len(v), k) for k, v in board.items() if len(v) > 1)  # get the cell with the least values
+        for num in board[k]:  # iterate over all the values
+            new_board = board.copy()  # create a copy of the board
             new_board[k] = num  # assign the value to the cell
-            if Sudoku(new_board).solve():  # if the board is solved
-                return True  # board is solved
-        return False  # board can't be solved
+            new_board = self.solve(new_board)  # solve the board
+            if new_board:  # if the board is solved
+                return new_board  # return the solved board
 
-    def __constraint_propagation(self):  # eliminate the values of solved cells from their peers
-        for k, v in self.board.items():  # iterate over all the cells
+    def __constraint_propagation(self, board):  # eliminate the values of solved cells from their peers
+        for k, v in board.items():  # iterate over all the cells
             if len(v) != 1:  # if the cell has more than one value
-                peers = self.peer_dict[k]  # get the peers of the cell
-                peer_values = {self.board[p] for p in peers if len(self.board[p]) == 1}  # get the values of the peers
-                self.board[k] = ''.join(set(v) - peer_values)  # remove the values of the peers from the cell
+                peers_k = self._peers[k]  # get the peers of the cell k
+                peer_v = set(board[peer] for peer in peers_k if len(board[peer]) == 1)  # get the values of the peers
+                board[k] = ''.join(set(board[k]) - peer_v)  # remove the values of the peers from the cell
+        return board
 
-    def __set_value(self):  # assign the value to the cell if it's the only choice
-        for unit in self.units:  # iterate over all the units
+    def __set_value(self, board):  # assign the value to the cell if it's the only choice
+        for unit in self._units:  # iterate over all the units
             for num in self._COLS:  # iterate over all the numbers
-                num_places = [cell for cell in unit if num in self.board[cell]]  # get all the cells with the number
-                if len(num_places) == 1:  # if the number only appears once in the unit
-                    self.board[num_places[0]] = num  # assign the value to the cell
+                cells_num = [cell for cell in unit if num in board[cell]]  # get all the cells with the number
+                if len(cells_num) == 1:  # if the number only appears once in the unit
+                    board[cells_num[0]] = num  # assign the value to the cell
+        return board
 
-    def __run_episode(self):  # run the constraint propagation and only choice strategy
-        while True:  # run until the board is solved or can't be solved
+    def __run_episode(self, board):  # run the constraint propagation and only choice strategy
+        changed = True  # flag to indicate if the board has changed
+        while changed:  # while the board has changed
+            before_count = sum(len(v) == 1 for v in board.values())  # get the number of solved cells
             start_time = time.perf_counter()  # get the start time
-            solved_values_before = sum(len(v) == 1 for v in self.board.values())  # get the number of solved cells
-            self.__constraint_propagation()  # eliminate the values of solved cells from their peers
-            self.__set_value()  # assign the value to the cell if it's the only choice
-            solved_values_after = sum(len(v) == 1 for v in self.board.values())  # get the number of solved cells
-            # append the time taken to solve the board in microseoconds
+            board = self.__constraint_propagation(board)  # eliminate the values of solved cells from their peers
+            board = self.__set_value(board)  # assign the value to the cell if it's the only choice
             self.exec_time.append((time.perf_counter() - start_time) * 100000)
-            if solved_values_before == solved_values_after:  # if the number of solved cells hasn't changed
-                # return False if any cell has no value and True otherwise
-                return False if any(len(v) == 0 for v in self.board.values()) else True 
+            after_count = sum(len(v) == 1 for v in board.values())  # get the number of solved cells
+            changed = before_count != after_count  # check if the number of solved cells has changed
+            if any(len(v) == 0 for v in board.values()):  # if any cell has no value
+                return False
+        return board
 
     def display(self, values):  # display the board
         width = max(len(values[s]) for s in self._CELLS) + 1  # get the width of the cell
         line = '+'.join(['-' * (width * 3)] * 3)  # create a line
         for r in self._ROWS:  # iterate over all the rows
-            print(
-                ''.join(values[r + c].center(width) + ('|' if c in '36' else '') for c in self._COLS))  # print the row 
+            # print the values of the cells in the row
+            print(''.join(values[r + c].center(width) + ('|' if c in '36' else '') for c in self._COLS))
             if r in 'CF':  # if the row is C or F
                 print(line)  # print the line
+        return
