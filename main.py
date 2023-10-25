@@ -4,13 +4,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-#START_BOARD = '53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79' # easy board
+# START_BOARD = '53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79' # easy board
 START_BOARD = '8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..'  # hard board
 
 if __name__ == '__main__':
     # create a dictionary of boxes and their values
     board = dict(zip([''.join(cell) for cell in product('ABCDEFGHI', '123456789')], START_BOARD))
-    sudoku = sp.Sudoku()  # create a Sudoku object
+    sudoku = sp.SudokuPropagation()  # create a Sudoku object
     sudoku.display(board)  # display the unsolved board
     print('\n')  # print two new lines
     for k, v in board.items():  # replace all the '.' with all possible values
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     total = []  # list to store the time taken to solve the board 100 times
     for i in range(100):  # solve the board 100 times
         start_time = time.perf_counter()  # get the start time
-        sp.Sudoku().solve(board)  # solve the board
+        sp.SudokuPropagation().solve(board)  # solve the board
         # append the time taken to solve the board in milliseconds
         total.append((time.perf_counter() - start_time) * 1000)
     # plot the time taken to solve the board

@@ -5,7 +5,7 @@ def cartesian_product(a, b):  # get the cartesian product of two strings
     return [i + j for i in a for j in b]
 
 
-class Sudoku:
+class SudokuPropagation:
     def __init__(self):
         self._ROWS = 'ABCDEFGHI'  # all the rows
         self._COLS = '123456789'  # all the columns
@@ -22,7 +22,7 @@ class Sudoku:
         self._peers = dict((cell, set(sum(units[cell], [])) - {cell}) for cell in self._CELLS)
 
     def solve(self, board):  # solve the board
-        board = self.__run_episode(board)  # run the elimination and only choice strategy
+        board = self._run_episode(board)  # run the elimination and only choice strategy
         if board is False:  # if the board is unsolvable
             return False  # return False
 
@@ -37,7 +37,7 @@ class Sudoku:
             if new_board:  # if the board is solved
                 return new_board  # return the solved board
 
-    def __constraint_propagation(self, board):  # eliminate the values of solved cells from their peers
+    def _constraint_propagation(self, board):  # eliminate the values of solved cells from their peers
         for k, v in board.items():  # iterate over all the cells
             if len(v) != 1:  # if the cell has more than one value
                 peers_k = self._peers[k]  # get the peers of the cell k
@@ -45,7 +45,7 @@ class Sudoku:
                 board[k] = ''.join(set(board[k]) - peer_v)  # remove the values of the peers from the cell
         return board
 
-    def __set_value(self, board):  # assign the value to the cell if it's the only choice
+    def _set_value(self, board):  # assign the value to the cell if it's the only choice
         for unit in self._units:  # iterate over all the units
             for num in self._COLS:  # iterate over all the numbers
                 cells_num = [cell for cell in unit if num in board[cell]]  # get all the cells with the number
@@ -53,13 +53,13 @@ class Sudoku:
                     board[cells_num[0]] = num  # assign the value to the cell
         return board
 
-    def __run_episode(self, board):  # run the constraint propagation and only choice strategy
+    def _run_episode(self, board):  # run the constraint propagation and only choice strategy
         changed = True  # flag to indicate if the board has changed
         while changed:  # while the board has changed
             before_count = sum(len(v) == 1 for v in board.values())  # get the number of solved cells
             start_time = time.perf_counter()  # get the start time
-            board = self.__constraint_propagation(board)  # eliminate the values of solved cells from their peers
-            board = self.__set_value(board)  # assign the value to the cell if it's the only choice
+            board = self._constraint_propagation(board)  # eliminate the values of solved cells from their peers
+            board = self._set_value(board)  # assign the value to the cell if it's the only choice
             self.exec_time.append((time.perf_counter() - start_time) * 100000)
             after_count = sum(len(v) == 1 for v in board.values())  # get the number of solved cells
             changed = before_count != after_count  # check if the number of solved cells has changed
