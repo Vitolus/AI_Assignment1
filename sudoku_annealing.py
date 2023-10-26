@@ -1,6 +1,7 @@
 import time
 import numpy as np
 from itertools import repeat, product
+import matplotlib.pyplot as plt
 
 
 class SudokuAnnealing:
@@ -8,6 +9,8 @@ class SudokuAnnealing:
         self.exec_time = []  # list to store the time taken to solve the board
         # convert the board to a numpy array
         self.board = np.array(list(board.replace('.', '0'))).reshape(9, 9).astype(int)
+        print('Simulated annealing unsolved board\n')
+        self.display()
         mask = (self.board == 0)  # get the mask of the cells with no value
         self._guesses = np.argwhere(mask)  # get the indices of the cells with randomly guessed values
         self.board[mask] = np.random.randint(1, 10, size=np.count_nonzero(mask))  # assign random values to the cells
@@ -59,17 +62,15 @@ class SudokuAnnealing:
         else:
             self.board[row, col] = old_value  # revert the change
 
-    def display_board(self):
-        for i, j in product(range(9), repeat=2):
-            print(self.board[i][j], end=' ')
-            if (j + 1) % 3 == 0 and j < len(self.board[i]) - 1:
-                print("|", end=' ')
-            print()
-            if (i + 1) % 3 == 0 and i < len(self.board) - 1:
-                print("-" * 21)
-
-
-if __name__ == '__main__':
-    sudoku = SudokuAnnealing('53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79')
-
-    energies = sudoku.solve()
+    def display(self):
+        for i in range(len(self.board)):
+            if i % 3 == 0 and i != 0:
+                print("- - - - - - - - - - - - ")
+            for j in range(len(self.board[0])):
+                if j % 3 == 0 and j != 0:
+                    print(" | ", end="")
+                if j == 8:
+                    print(self.board[i][j])
+                else:
+                    print(str(self.board[i][j]) + " ", end="")
+        print('\n')
