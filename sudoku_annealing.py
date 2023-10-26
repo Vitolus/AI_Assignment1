@@ -1,16 +1,33 @@
 import time
 import numpy as np
+from itertools import repeat, product
 
-# TODO: implement the remaining methods to solve
+
 class SudokuAnnealing:
     def __init__(self, board):
+        self.exec_time = []  # list to store the time taken to solve the board
         # convert the board to a numpy array
         self.board = np.array(list(board.replace('.', '0'))).reshape(9, 9).astype(int)
         mask = (self.board == 0)  # get the mask of the cells with no value
         self._guesses = np.argwhere(mask)  # get the indices of the cells with randomly guessed values
         self.board[mask] = np.random.randint(1, 10, size=np.count_nonzero(mask))  # assign random values to the cells
         self._energy = self._global_energy()  # get the global energy of the board
-        self._beta = 1e4  # set cooling rate
+        self._temperature = 0.25  # initialize the inverse temperature
+        self._cooling_rate = 2e-2  # initialize the cooling rate (0.9999)
+
+    def solve(self):
+        start_time = time.perf_counter()  # get the start time
+        energies = []  # list to store the energy
+        while self._temperature < 1e2:  # while the temperature is less than 1e2
+            for _ in repeat(None, 1000):  # repeat 1000 times
+                self._metropolis()  # run the metropolis algorithm
+            energies.append(self._energy)  # append the energy
+            # append the time taken to solve the board
+            self.exec_time.append((time.perf_counter() - start_time) * 100000)
+            if self._energy <= 0:  # if the energy is zero
+                break  # break the loop
+            self._temperature *= (1.0 + self._cooling_rate)  # cool the system (self._temperature *= 0.9999)
+        return energies  # return the energy
 
     def _local_energy(self, row, col):  # calculate the local energy of the cell
         energy = 0  # initialize the energy
@@ -25,26 +42,34 @@ class SudokuAnnealing:
 
     def _global_energy(self):  # calculate the global energy of the board
         energy = 0  # initialize the energy
-        for row, col in [(i, j) for i in range(9) for j in range(9)]:  # iterate over all the cells
+        for row, col in product(range(9), repeat=2):
             energy += self._local_energy(row, col)  # add the local energy of the cell
         return energy  # return the energy
 
-    def _annealing(self):
+    def _metropolis(self):
         row, col = self._guesses[np.random.randint(0, len(self._guesses))]  # get a random cell
         old_energy = self._local_energy(row, col)  # get the local energy of the cell
         old_value = self.board[row, col]  # get the old value of the cell
         self.board[row, col] = np.random.randint(1, 10)  # assign a random value to the cell
-        new_energy = self._local_energy(row, col)  # get the new local energy of the cell
-        delta_energy = new_energy - old_energy  # get the change in energy
+        delta_energy = self._local_energy(row, col) - old_energy  # get the change in energy
         # if the change in energy is negative or the probability is less than the threshold
-        if delta_energy < 0 or np.random.rand() < np.exp(-self._beta * delta_energy):
+        if delta_energy < 0 or np.random.rand() < np.exp(-self._temperature * delta_energy):
             self._energy += delta_energy  # update the global energy
             return
         else:
-            self.board[row, col] = old_value
+            self.board[row, col] = old_value  # revert the change
+
+    def display_board(self):
+        for i, j in product(range(9), repeat=2):
+            print(self.board[i][j], end=' ')
+            if (j + 1) % 3 == 0 and j < len(self.board[i]) - 1:
+                print("|", end=' ')
+            print()
+            if (i + 1) % 3 == 0 and i < len(self.board) - 1:
+                print("-" * 21)
 
 
 if __name__ == '__main__':
     sudoku = SudokuAnnealing('53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79')
-    print(sudoku.board)
 
+    energies = sudoku.solve()

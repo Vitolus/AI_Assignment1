@@ -22,7 +22,7 @@ class SudokuPropagation:
         self._peers = dict((cell, set(sum(units[cell], [])) - {cell}) for cell in self._CELLS)
 
     def solve(self, board):  # solve the board
-        board = self._run_episode(board)  # run the elimination and only choice strategy
+        board = self._run_epoch(board)  # run the elimination and only choice strategy
         if board is False:  # if the board is unsolvable
             return False  # return False
 
@@ -53,14 +53,14 @@ class SudokuPropagation:
                     board[cells_num[0]] = num  # assign the value to the cell
         return board
 
-    def _run_episode(self, board):  # run the constraint propagation and only choice strategy
+    def _run_epoch(self, board):  # run the constraint propagation and only choice strategy
         changed = True  # flag to indicate if the board has changed
         while changed:  # while the board has changed
             before_count = sum(len(v) == 1 for v in board.values())  # get the number of solved cells
             start_time = time.perf_counter()  # get the start time
             board = self._constraint_propagation(board)  # eliminate the values of solved cells from their peers
             board = self._set_value(board)  # assign the value to the cell if it's the only choice
-            self.exec_time.append((time.perf_counter() - start_time) * 100000)
+            self.exec_time.append((time.perf_counter() - start_time) * 100000)  
             after_count = sum(len(v) == 1 for v in board.values())  # get the number of solved cells
             changed = before_count != after_count  # check if the number of solved cells has changed
             if any(len(v) == 0 for v in board.values()):  # if any cell has no value
