@@ -60,7 +60,7 @@ class SudokuPropagation:
             start_time = time.perf_counter()  # get the start time
             board = self._constraint_propagation(board)  # eliminate the values of solved cells from their peers
             board = self._set_value(board)  # assign the value to the cell if it's the only choice
-            self.exec_time.append((time.perf_counter() - start_time) * 100000)  
+            self.exec_time.append((time.perf_counter() - start_time) * 1000)
             after_count = sum(len(v) == 1 for v in board.values())  # get the number of solved cells
             changed = before_count != after_count  # check if the number of solved cells has changed
             if any(len(v) == 0 for v in board.values()):  # if any cell has no value

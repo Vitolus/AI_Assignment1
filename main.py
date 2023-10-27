@@ -5,76 +5,92 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-START_BOARD = '53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79' # easy board
-# START_BOARD = '8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..'  # hard board
+START_BOARD_EASY = '53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79'  # easy board
+START_BOARD_HARD = '8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..'  # hard board
 
 if __name__ == '__main__':
     # create a dictionary of boxes and their values
-    board = dict(zip([''.join(cell) for cell in product('ABCDEFGHI', '123456789')], START_BOARD))
+    board_easy = dict(zip([''.join(cell) for cell in product('ABCDEFGHI', '123456789')], START_BOARD_EASY))
+    board_hard = dict(zip([''.join(cell) for cell in product('ABCDEFGHI', '123456789')], START_BOARD_HARD))
+    
+    # Solve the easy board using constraint propagation
     sudoku_sp = sp.SudokuPropagation()  # create a Sudoku object
-    print('Constraint propagation unsolved board\n')
-    sudoku_sp.display(board)  # display the unsolved board
+    print('Constraint propagation unsolved easy board\n')
+    sudoku_sp.display(board_easy)  # display the unsolved board
     print('\n')
-    for k, v in board.items():  # replace all the '.' with all possible values
+    for k, v in board_easy.items():  # replace all the '.' with all possible values
         if v == '.':  # if the cell is empty
-            board[k] = '123456789'  # replace it with all possible values
-
-    solved_board = sudoku_sp.solve(board)  # solve the board
-    print('Constraint propagation solved board\n')
+            board_easy[k] = '123456789'  # replace it with all possible values
+    solved_board = sudoku_sp.solve(board_easy)  # solve the board
+    print('Constraint propagation solved easy board\n')
     sudoku_sp.display(solved_board)  # display the solved board
     print('\n')
-    run_sp = sudoku_sp.exec_time  # get the time taken to solve the board
-    print('Constraint propagation time taken to solve the board')
-    print(run_sp)  # print the time taken to solve the board
-    total = []  # list to store the time taken to solve the board 100 times
-    for i in range(100):  # solve the board 100 times
-        start_time = time.perf_counter()  # get the start time
-        sp.SudokuPropagation().solve(board)  # solve the board
-        # append the time taken to solve the board in milliseconds
-        total.append((time.perf_counter() - start_time) * 1000)
-
-    #TODO: add annealing 100 times and plot the time taken to solve the board 100 times
-
-    sudoku_sa = sa.SudokuAnnealing(START_BOARD)  # create a Sudoku object
-    print('Simulated annealing unsolved board with random values\n')
+    run_sp_easy = sudoku_sp.exec_time  # get the time taken to solve the board
+    print('Constraint propagation time taken to solve the easy board')
+    print(run_sp_easy)  # print the time taken to solve the board
+    
+    # Solve the hard board using constraint propagation
+    sudoku_sp = sp.SudokuPropagation()  # create a Sudoku object
+    print('Constraint propagation unsolved hard board\n')
+    sudoku_sp.display(board_hard)  # display the unsolved board
+    print('\n')
+    for k, v in board_hard.items():  # replace all the '.' with all possible values
+        if v == '.':  # if the cell is empty
+            board_hard[k] = '123456789'  # replace it with all possible values
+    solved_board = sudoku_sp.solve(board_hard)  # solve the board
+    print('Constraint propagation solved hard board\n')
+    sudoku_sp.display(solved_board)  # display the solved board
+    print('\n')
+    run_sp_hard = sudoku_sp.exec_time  # get the time taken to solve the board
+    print('Constraint propagation time taken to solve the hard board')
+    print(run_sp_hard)  # print the time taken to solve the board
+            
+    # Solve the easy board using simulated annealing
+    sudoku_sa = sa.SudokuAnnealing(START_BOARD_EASY)  # create a Sudoku object
+    print('Simulated annealing unsolved easy board with random values\n')
     sudoku_sa.display()  # display the unsolved board
-    energies = sudoku_sa.solve()  # solve the board
-    print('Simulated annealing solved board\n')
+    energies_easy = sudoku_sa.solve()  # solve the board
+    print('Simulated annealing solved easy board\n')
     sudoku_sa.display()  # display the solved board
-    print('Simulated annealing time taken to solve the board')
-    run_sa = sudoku_sa.exec_time  # get the time taken to solve the board
-    print(run_sa)  # print the time taken to solve the board
-
+    print('Simulated annealing time taken to solve the easy board')
+    run_sa_easy = sudoku_sa.exec_time  # get the time taken to solve the board
+    print(run_sa_easy)  # print the time taken to solve the board
+    
+    # Solve the hard board using simulated annealing
+    sudoku_sa = sa.SudokuAnnealing(START_BOARD_HARD)  # create a Sudoku object
+    print('Simulated annealing unsolved hard board with random values\n')
+    sudoku_sa.display()  # display the unsolved board
+    energies_hard = sudoku_sa.solve()  # solve the board
+    print('Simulated annealing solved hard board\n')
+    sudoku_sa.display()  # display the solved board
+    print('Simulated annealing time taken to solve the hard board')
+    run_sa_hard = sudoku_sa.exec_time  # get the time taken to solve the board
+    print(run_sa_hard)  # print the time taken to solve the board
+    
     # plot the energy of the board
     plt.figure()
-    plt.plot(energies, label='energy per epoch')
+    plt.plot(energies_easy, label='energy_easy per epoch')
+    plt.plot(energies_hard, label='energy_hard per epoch')
     plt.title('Energy of the board')
     plt.xlabel('epoch iteration')
     plt.ylabel('energy value')
     plt.legend()
 
-    # plot the time taken to solve the board
+    # plot the time taken to solve the board using constraint propagation
     plt.figure()
-    plt.plot(np.arange(1, len(run_sp) + 1), run_sp, label='sp time per epoch')
+    plt.plot(np.arange(1, len(run_sp_easy) + 1), run_sp_easy, label='sp_easy time per epoch')
+    plt.plot(np.arange(1, len(run_sp_hard) + 1), run_sp_hard, label='sp_hard time per epoch')
     plt.title('Time taken to solve the board')
     plt.xlabel('epoch iteration')
-    plt.ylabel('time (microseconds)')
+    plt.ylabel('time (milliseconds)')
     plt.legend()
 
-    # plot the time taken to solve the board
+    # plot the time taken to solve the board using simulated annealing
     plt.figure()
-    plt.plot(np.arange(1, len(run_sa) + 1), run_sa, label='sa time per epoch')
+    plt.plot(np.arange(1, len(run_sa_easy) + 1), run_sa_easy, label='sa_easy time per epoch')
+    plt.plot(np.arange(1, len(run_sa_hard) + 1), run_sa_hard, label='sa_hard time per epoch')
     plt.title('Time taken to solve the board')
     plt.xlabel('epoch iteration')
-    plt.ylabel('time (microseconds)')
-    plt.legend()
-
-    # plot the time taken to solve the board 100 times
-    plt.figure()
-    plt.plot(np.arange(1, len(total) + 1), total, label='time per run')
-    plt.plot(np.arange(1, len(total) + 1), [np.mean(total)] * len(total), label='mean')
-    plt.title('Time taken to solve the board 100 times')
-    plt.xlabel('run iteration')
     plt.ylabel('time (milliseconds)')
     plt.legend()
     plt.show()
