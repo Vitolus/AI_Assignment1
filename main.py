@@ -28,7 +28,7 @@ if __name__ == '__main__':
     run_sp_easy = sudoku_sp.exec_time  # get the time taken to solve the board
     del run_sp_easy[0]
     print('Constraint propagation time taken to solve the easy board')
-    print(run_sp_easy)  # print the time taken to solve the board
+    print(run_sp_easy[-1])  # print the time taken to solve the board
     
     # Solve the hard board using constraint propagation
     sudoku_sp = sp.SudokuPropagation()  # create a Sudoku object
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     run_sp_hard = sudoku_sp.exec_time  # get the time taken to solve the board
     del run_sp_hard[0]
     print('Constraint propagation time taken to solve the hard board')
-    print(run_sp_hard)  # print the time taken to solve the board
+    print(run_sp_hard[-1])  # print the time taken to solve the board
             
     # Solve the easy board using simulated annealing
     sudoku_sa = sa.SudokuAnnealing(START_BOARD_EASY)  # create a Sudoku object
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     print('Simulated annealing time taken to solve the easy board')
     run_sa_easy = sudoku_sa.exec_time  # get the time taken to solve the board
     del run_sa_easy[0]
-    print(run_sa_easy)  # print the time taken to solve the board
+    print(run_sa_easy[-1])  # print the time taken to solve the board
     
     # Solve the hard board using simulated annealing
     sudoku_sa = sa.SudokuAnnealing(START_BOARD_HARD)  # create a Sudoku object
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     print('Simulated annealing time taken to solve the hard board')
     run_sa_hard = sudoku_sa.exec_time  # get the time taken to solve the board
     del run_sa_hard[0]
-    print(run_sa_hard)  # print the time taken to solve the board
+    print(run_sa_hard[-1])  # print the time taken to solve the board
     
     # plot the energy of the board
     plt.figure()
