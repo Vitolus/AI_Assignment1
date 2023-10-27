@@ -26,6 +26,7 @@ if __name__ == '__main__':
     sudoku_sp.display(solved_board)  # display the solved board
     print('\n')
     run_sp_easy = sudoku_sp.exec_time  # get the time taken to solve the board
+    del run_sp_easy[0]
     print('Constraint propagation time taken to solve the easy board')
     print(run_sp_easy)  # print the time taken to solve the board
     
@@ -42,6 +43,7 @@ if __name__ == '__main__':
     sudoku_sp.display(solved_board)  # display the solved board
     print('\n')
     run_sp_hard = sudoku_sp.exec_time  # get the time taken to solve the board
+    del run_sp_hard[0]
     print('Constraint propagation time taken to solve the hard board')
     print(run_sp_hard)  # print the time taken to solve the board
             
@@ -54,6 +56,7 @@ if __name__ == '__main__':
     sudoku_sa.display()  # display the solved board
     print('Simulated annealing time taken to solve the easy board')
     run_sa_easy = sudoku_sa.exec_time  # get the time taken to solve the board
+    del run_sa_easy[0]
     print(run_sa_easy)  # print the time taken to solve the board
     
     # Solve the hard board using simulated annealing
@@ -65,6 +68,7 @@ if __name__ == '__main__':
     sudoku_sa.display()  # display the solved board
     print('Simulated annealing time taken to solve the hard board')
     run_sa_hard = sudoku_sa.exec_time  # get the time taken to solve the board
+    del run_sa_hard[0]
     print(run_sa_hard)  # print the time taken to solve the board
     
     # plot the energy of the board
@@ -78,19 +82,19 @@ if __name__ == '__main__':
 
     # plot the time taken to solve the board using constraint propagation
     plt.figure()
-    plt.plot(np.arange(1, len(run_sp_easy) + 1), run_sp_easy, label='sp_easy time per epoch')
-    plt.plot(np.arange(1, len(run_sp_hard) + 1), run_sp_hard, label='sp_hard time per epoch')
+    plt.semilogy(np.arange(1, len(run_sp_easy) + 1), run_sp_easy, label='sp_easy cumulative time per epoch')
+    plt.semilogy(np.arange(1, len(run_sp_hard) + 1), run_sp_hard, label='sp_hard cumulative time per epoch')
     plt.title('Time taken to solve the board')
     plt.xlabel('epoch iteration')
-    plt.ylabel('time (milliseconds)')
+    plt.ylabel('time (seconds)')
     plt.legend()
 
     # plot the time taken to solve the board using simulated annealing
     plt.figure()
-    plt.plot(np.arange(1, len(run_sa_easy) + 1), run_sa_easy, label='sa_easy time per epoch')
-    plt.plot(np.arange(1, len(run_sa_hard) + 1), run_sa_hard, label='sa_hard time per epoch')
+    plt.semilogy(np.arange(1, len(run_sa_easy) + 1), run_sa_easy, label='sa_easy cumulative time per epoch')
+    plt.semilogy(np.arange(1, len(run_sa_hard) + 1), run_sa_hard, label='sa_hard cumulative time per epoch')
     plt.title('Time taken to solve the board')
     plt.xlabel('epoch iteration')
-    plt.ylabel('time (milliseconds)')
+    plt.ylabel('time (seconds)')
     plt.legend()
     plt.show()

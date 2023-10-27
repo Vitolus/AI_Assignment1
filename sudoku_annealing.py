@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 class SudokuAnnealing:
     def __init__(self, board):
-        self.exec_time = []  # list to store the time taken to solve the board
+        self.exec_time = [0.]  # list to store the time taken to solve the board
         # convert the board to a numpy array
         self.board = np.array(list(board.replace('.', '0'))).reshape(9, 9).astype(int)
         print('Simulated annealing unsolved board\n')
@@ -19,14 +19,14 @@ class SudokuAnnealing:
         self._cooling_rate = 2e-2  # initialize the cooling rate (0.9999)
 
     def solve(self):
-        start_time = time.perf_counter()  # get the start time
         energies = []  # list to store the energy
-        while self._temperature < 1e2:  # while the temperature is less than 1e2
+        while self._temperature < 1e2:  # while the temperature is less than 1e2 run epoch
+            start_time = time.perf_counter()  # get the start time
             for _ in repeat(None, 1000):  # repeat 1000 times
                 self._metropolis()  # run the metropolis algorithm
-            energies.append(self._energy)  # append the energy
             # append the time taken to solve the board
-            self.exec_time.append((time.perf_counter() - start_time) * 100000)
+            self.exec_time.append((time.perf_counter() + self.exec_time[-1] - start_time))
+            energies.append(self._energy)  # append the energy
             if self._energy <= 0:  # if the energy is zero
                 break  # break the loop
             self._temperature *= (1.0 + self._cooling_rate)  # cool the system (self._temperature *= 0.9999)

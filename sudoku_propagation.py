@@ -10,7 +10,7 @@ class SudokuPropagation:
         self._ROWS = 'ABCDEFGHI'  # all the rows
         self._COLS = '123456789'  # all the columns
         self._CELLS = cartesian_product(self._ROWS, self._COLS)  # all the cells
-        self.exec_time = []  # list to store the time taken to solve the board
+        self.exec_time = [0.]  # list to store the time taken to solve the board
         row_u = [cartesian_product(row, self._COLS) for row in self._ROWS]  # row units
         col_u = [cartesian_product(self._ROWS, col) for col in self._COLS]  # column units
         # cell units
@@ -60,7 +60,7 @@ class SudokuPropagation:
             start_time = time.perf_counter()  # get the start time
             board = self._constraint_propagation(board)  # eliminate the values of solved cells from their peers
             board = self._set_value(board)  # assign the value to the cell if it's the only choice
-            self.exec_time.append((time.perf_counter() - start_time) * 1000)
+            self.exec_time.append((time.perf_counter() + self.exec_time[-1] - start_time))
             after_count = sum(len(v) == 1 for v in board.values())  # get the number of solved cells
             changed = before_count != after_count  # check if the number of solved cells has changed
             if any(len(v) == 0 for v in board.values()):  # if any cell has no value
