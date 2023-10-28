@@ -1,7 +1,6 @@
 import time
 import numpy as np
 from itertools import repeat, product
-import matplotlib.pyplot as plt
 
 
 class SudokuAnnealing:
@@ -16,7 +15,7 @@ class SudokuAnnealing:
         self.board[mask] = np.random.randint(1, 10, size=np.count_nonzero(mask))  # assign random values to the cells
         self._energy = self._global_energy()  # get the global energy of the board
         self._temperature = 0.25  # initialize the inverse temperature
-        self._cooling_rate = 2e-2  # initialize the cooling rate (0.9999)
+        self._cooling_rate = 2e-2  # initialize the cooling rate
 
     def solve(self):
         energies = []  # list to store the energy
@@ -29,7 +28,7 @@ class SudokuAnnealing:
             energies.append(self._energy)  # append the energy
             if self._energy <= 0:  # if the energy is zero
                 break  # break the loop
-            self._temperature *= (1.0 + self._cooling_rate)  # cool the system (self._temperature *= 0.9999)
+            self._temperature *= (1.0 + self._cooling_rate)  # cool the system
         return energies  # return the energy
 
     def _local_energy(self, row, col):  # calculate the local energy of the cell
