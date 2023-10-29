@@ -29,7 +29,7 @@ class SudokuPropagation:
         if all(len(v) == 1 for v in board.values()):  # if all the cells have only one value
             return board  # board is solved
 
-        length, k = min((len(v), k) for k, v in board.items() if len(v) > 1)  # get the cell with the least values
+        _, k = min((len(v), k) for k, v in board.items() if len(v) > 1)  # get the cell with the least values
         for num in board[k]:  # iterate over all the values
             new_board = board.copy()  # create a copy of the board
             new_board[k] = num  # assign the value to the cell
