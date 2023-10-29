@@ -3,7 +3,6 @@ import sudoku_annealing as sa
 from itertools import product
 import numpy as np
 import matplotlib.pyplot as plt
-import time
 
 START_BOARD_EASY = '53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79'  # easy board
 START_BOARD_HARD = '8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..'  # hard board

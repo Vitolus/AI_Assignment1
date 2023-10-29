@@ -2,7 +2,7 @@ from math import exp
 import random
 import time
 import numpy as np
-from itertools import repeat, product
+from itertools import repeat
 
 
 class SudokuAnnealing:
