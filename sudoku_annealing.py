@@ -1,3 +1,5 @@
+from math import exp
+import random
 import time
 import numpy as np
 from itertools import repeat, product
@@ -14,17 +16,18 @@ class SudokuAnnealing:
         self._guesses = np.argwhere(mask)  # get the indices of the cells with randomly guessed values
         self.board[mask] = np.random.randint(1, 10, size=np.count_nonzero(mask))  # assign random values to the cells
         self._energy = self._global_energy()  # get the global energy of the board
-        self._temperature = 0.25  # initialize the inverse temperature
-        self._cooling_rate = 2e-2  # initialize the cooling rate
+        self._temperature = 0.5  # initialize the inverse temperature
+        self._cooling_rate = 0.02  # initialize the cooling rate
 
     def solve(self):
         energies = []  # list to store the energy
-        while self._temperature < 1e2:  # while the temperature is less than 1e2 run epoch
+        while self._temperature < 10:  # while the temperature is less than max temperature
             start_time = time.perf_counter()  # get the start time
-            for _ in repeat(None, 1000):  # repeat 1000 times
+            for _ in repeat(None, 5000):  # repeat for iterations per temperature level
                 self._metropolis()  # run the metropolis algorithm
             # append the time taken to solve the board
             self.exec_time.append((time.perf_counter() + self.exec_time[-1] - start_time))
+            self._energy = self._global_energy()  # get the global energy of the board
             energies.append(self._energy)  # append the energy
             if self._energy <= 0:  # if the energy is zero
                 break  # break the loop
@@ -44,19 +47,19 @@ class SudokuAnnealing:
 
     def _global_energy(self):  # calculate the global energy of the board
         energy = 0  # initialize the energy
-        for row, col in product(range(9), repeat=2):
-            energy += self._local_energy(row, col)  # add the local energy of the cell
+        cols = [0, 3, 6, 1, 4, 7, 2, 5, 8]  # list to store the columns
+        for i in range(9):  # iterate over all the rows
+            energy += self._local_energy(i, cols[i])  # add the local energy of the cell
         return energy  # return the energy
 
     def _metropolis(self):
-        row, col = self._guesses[np.random.randint(0, len(self._guesses))]  # get a random cell
+        row, col = random.choice(self._guesses)  # get a random cell
         old_energy = self._local_energy(row, col)  # get the local energy of the cell
         old_value = self.board[row, col]  # get the old value of the cell
         self.board[row, col] = np.random.randint(1, 10)  # assign a random value to the cell
         delta_energy = self._local_energy(row, col) - old_energy  # get the change in energy
         # if the change in energy is negative or the probability is less than the threshold
-        if delta_energy < 0 or np.random.rand() < np.exp(-self._temperature * delta_energy):
-            self._energy += delta_energy  # update the global energy
+        if delta_energy < 0 or random.uniform(0.0, 1.0) < exp(-self._temperature * delta_energy):
             return
         else:
             self.board[row, col] = old_value  # revert the change

@@ -75,6 +75,7 @@ if __name__ == '__main__':
     plt.figure()
     plt.plot(energies_easy, label='energy_easy per epoch')
     plt.plot(energies_hard, label='energy_hard per epoch')
+    plt.ylim(bottom=0)
     plt.title('Energy of the board')
     plt.xlabel('epoch iteration')
     plt.ylabel('energy value')
